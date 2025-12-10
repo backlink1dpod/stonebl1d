@@ -1,0 +1,173 @@
+######################## default configuration ####################
+# Base URL: Để "/" giúp bạn deploy lên nhiều domain mà không cần sửa file config.
+# TUY NHIÊN: Khi chạy lệnh build cho từng site cụ thể, nên thêm tham số --baseURL để chuẩn SEO nhất.
+baseURL = "/"
+
+# Title of your website (required).
+title = "Backlink 1D"
+
+# Your theme name
+theme = "hugoplate"
+
+# Default time zone
+timeZone = "Asia/Ho_Chi_Minh" # Đã đổi về giờ Việt Nam
+
+# post excerpt
+summaryLength = 10
+
+# disable language
+disableLanguages = [] 
+hasCJKLanguage = false 
+
+# default language
+defaultContentLanguage = 'en'
+defaultContentLanguageInSubdir = false
+
+######################## SEO & URL Configuration (QUAN TRỌNG) ####################
+
+# 1. Tạo URL dạng file tĩnh (.html) giống mẫu bạn gửi
+uglyurls = true
+
+# 2. Tự động tạo file robots.txt cho Google Bot
+enableRobotsTXT = true
+
+# 3. Cấu hình Permalinks để ra đúng dạng: domain.com/posts/ten-bai.html
+[permalinks]
+  posts = "/posts/:slug"  # Đảm bảo bài viết nằm trong thư mục posts và có đuôi .html
+  pages = "/:slug"        # Các trang tĩnh (About, Contact) nằm ngay root
+
+# 4. Cấu hình Sitemap để index nhanh hơn
+[sitemap]
+  changefreq = "daily"    # Báo cho Google biết web cập nhật hàng ngày
+  priority = 0.8          # Độ ưu tiên (0.0 -> 1.0)
+  filename = "sitemap.xml"
+
+########################### Services #############################
+[services]
+[services.googleAnalytics]
+ID = 'G-MEASUREMENT_ID' 
+
+[services.disqus]
+shortname = 'themefisher-template' 
+
+########################## Pagination ############################
+[pagination]
+disableAliases = false
+pagerSize = 10
+path = 'page'
+
+############################# Build ##############################
+[build]
+[build.buildStats]
+enable = true
+[[build.cachebusters]]
+source = 'assets/notwatching/hugo_stats\.json'
+target = 'css'
+
+############################# Modules ############################
+[module]
+[[module.mounts]]
+source = 'assets'
+target = 'assets'
+[[module.mounts]]
+disableWatch = true
+source = 'hugo_stats.json'
+target = 'assets/notwatching/hugo_stats.json'
+
+############################# Outputs ############################
+[outputs]
+home = ["HTML", "RSS", "WebAppManifest", "SearchIndex"]
+
+############################# Imaging ############################
+[imaging]
+quality = 85 # Tăng chất lượng ảnh lên chút cho đẹp (Mặc định 75)
+resampleFilter = "Lanczos"
+
+############################ Caches ##############################
+[caches]
+[caches.images]
+dir = ":resourceDir/_gen"
+maxAge = "720h"
+
+[caches.assets]
+dir = ":resourceDir/_gen"
+maxAge = "720h"
+
+############################ Markup ##############################
+[markup]
+[markup.goldmark.renderer]
+unsafe = true
+
+[markup.highlight]
+style = 'monokai'
+lineNumbersInTable = false
+
+[markup.tableOfContents]
+startLevel = 2
+endLevel = 5
+ordered = true
+
+########################### Media types ###########################
+[mediaTypes]
+[mediaTypes."application/manifest+json"]
+suffixes = ["webmanifest"]
+
+########################### Output Format ##########################
+[outputFormats]
+[outputFormats.WebAppManifest]
+mediaType = "application/manifest+json"
+rel = "manifest"
+
+[outputFormats.SearchIndex]
+mediaType = "application/json"
+baseName = "searchindex"
+isPlainText = true
+notAlternative = true
+
+############################# Plugins ##############################
+
+# CSS Plugins
+[[params.plugins.css]]
+link = "plugins/swiper/swiper-bundle.css"
+lazy = true
+[[params.plugins.css]]
+link = "plugins/glightbox/glightbox.css"
+lazy = true
+[[params.plugins.css]]
+link = "plugins/font-awesome/v6/brands.css"
+lazy = true
+[[params.plugins.css]]
+link = "plugins/font-awesome/v6/solid.css"
+lazy = true
+[[params.plugins.css]]
+link = "plugins/font-awesome/v6/icons.css"
+lazy = true
+
+# JS Plugins
+[[params.plugins.js]]
+link = "js/search.js"
+lazy = false
+[[params.plugins.js]]
+link = "plugins/swiper/swiper-bundle.js"
+lazy = false
+[[params.plugins.js]]
+link = "plugins/cookie.js"
+lazy = false
+[[params.plugins.js]]
+link = "plugins/glightbox/glightbox.js"
+lazy = true
+[[params.plugins.js]]
+link = "js/gallery-slider.js"
+lazy = true
+[[params.plugins.js]]
+link = "js/accordion.js"
+lazy = true
+[[params.plugins.js]]
+link = "js/tab.js"
+lazy = true
+[[params.plugins.js]]
+link = "js/modal.js"
+lazy = true
+[[params.plugins.js]]
+link = "plugins/youtube-lite.js"
+lazy = true

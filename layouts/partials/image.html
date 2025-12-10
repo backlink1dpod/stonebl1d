@@ -1,0 +1,27 @@
+{{ $src := .Src }}
+{{ $alt := .Alt }}
+{{ $class := .Class | default "" }}
+{{ $size := .Size | default "800x" }}
+
+{{/* 1. Xử lý ảnh Online */}}
+{{ if or (hasPrefix $src "http") (hasPrefix $src "https") }}
+  <img src="{{ $src }}" alt="{{ $alt }}" class="{{ $class }} img-fluid" loading="lazy">
+
+{{/* 2. Xử lý ảnh Local */}}
+{{ else }}
+  {{ if (fileExists (add "static/" $src)) }}
+    {{/* Ảnh trong static không resize được, hiển thị luôn */}}
+    <img src="{{ $src | relURL }}" alt="{{ $alt }}" class="{{ $class }} img-fluid" loading="lazy">
+  {{ else }}
+    {{/* Ảnh trong assets (resize được) */}}
+    {{ if (fileExists (add "assets/" $src)) }}
+       {{ $img := resources.Get $src }}
+       {{ if $img }}
+         {{/* Nếu muốn resize thì mở comment dòng dưới, hiện tại để nguyên cho an toàn */}}
+         {{/* $img = $img.Resize $size */}} 
+         <img src="{{ $img.RelPermalink }}" alt="{{ $alt }}" class="{{ $class }} img-fluid" loading="lazy">
+       {{ end }}
+    {{ else }}
+       {{ end }}
+  {{ end }}
+{{ end }}

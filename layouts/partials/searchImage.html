@@ -1,0 +1,20 @@
+{{ $imagePath := .Src }}
+
+{{/* KIỂM TRA: Nếu là link online (bắt đầu bằng http hoặc https) */}}
+{{ if or (hasPrefix $imagePath "http") (hasPrefix $imagePath "https") }}
+  "{{ $imagePath }}"
+{{ else }}
+  {{/* NẾU LÀ ẢNH LOCAL (Code gốc của theme) */}}
+  {{ if fileExists (add `assets/` (string $imagePath)) }}
+    {{ $image := resources.Get $imagePath }}
+    {{ $imageExt := path.Ext $image }}
+    {{ if or (eq $imageExt ".jpg") (eq $imageExt ".jpeg") (eq $imageExt ".png") (eq $imageExt ".webp") }}
+      {{ $image:= $image.Resize .Size }}
+      "{{ $image.RelPermalink }}"
+    {{ else }}
+      "{{ $image.RelPermalink }}"
+    {{ end }}
+  {{ else if fileExists (add `static/` (string $imagePath)) }}
+    "{{ $imagePath | relURL }}"
+  {{ end }}
+{{ end }}
