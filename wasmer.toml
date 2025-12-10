@@ -1,0 +1,22 @@
+[package]
+name = "stonebl1d"
+version = "0.1.0"
+description = "Hugo site with Hugoplate theme"
+
+[dependencies]
+"wasmer/static-web-server" = "1.1.0"
+
+[fs]
+"/public" = "public"
+
+[[command]]
+name = "start"
+module = "wasmer/static-web-server:webserver"
+runner = "wasi"
+
+[command.annotations.wasi]
+main-args = [
+    "--root=/public",
+    "--port=8080",
+    "--log-level=info"
+]
