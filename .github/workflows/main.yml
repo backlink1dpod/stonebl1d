@@ -25,6 +25,10 @@ env:
   TINA_CLIENT_ID: ${{ secrets.TINA_CLIENT_ID }}
   TINA_TOKEN: ${{ secrets.TINA_TOKEN }}
   TINA_SEARCH_TOKEN: ${{ secrets.TINA_SEARCH_TOKEN }}
+  
+  # 👇 THÊM DÒNG NÀY VÀO ĐÂY 👇
+  # Dòng này ép Hugo sử dụng link này CHỈ KHI chạy workflow này
+  HUGO_BASEURL: "https://backlink1dpod.github.io/stonebl1d/"
 
 jobs:
   # Build job
