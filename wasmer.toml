@@ -2,6 +2,7 @@
 name = "backlink1dpod/stonebl1d"
 version = "0.1.0"
 description = "My Hugo Blog on Wasmer"
+entrypoint = "start"  # <--- Quan trọng: Báo cho Wasmer biết lệnh nào là lệnh chạy chính
 
 [dependencies]
 "wasmer/static-web-server" = "^1"
@@ -11,7 +12,8 @@ description = "My Hugo Blog on Wasmer"
 
 [[command]]
 name = "start"
-module = "wasmer/static-web-server:web-server"
-# 👇 SỬA DÒNG NÀY: Dùng đường dẫn runner đầy đủ thay vì chỉ "wasi"
-runner = "https://webc.org/runner/wasi"
+# 👇 SỬA QUAN TRỌNG: "webserver" viết liền, KHÔNG có dấu gạch ngang (-)
+module = "wasmer/static-web-server:webserver"
+# 👇 Quay về runner chuẩn "wasi" (nhanh và ổn định hơn URL https...)
+runner = "wasi"
 annotations = { "wasi.env" = ["SERVER_ROOT=/public", "PORT=80"] }
