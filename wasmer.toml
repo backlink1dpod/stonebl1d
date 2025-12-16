@@ -3,18 +3,15 @@ name = "backlink1dpod/stonebl1d"
 version = "0.1.0"
 description = "My Hugo Blog on Wasmer"
 
-# Chúng ta sử dụng một web server viết bằng Rust/Wasm để phục vụ file
 [dependencies]
 "wasmer/static-web-server" = "^1"
 
-# Map thư mục public (sau khi build xong) vào trong container Wasm
 [fs]
 "/public" = "public"
 
-# Cấu hình lệnh chạy server
 [[command]]
 name = "start"
 module = "wasmer/static-web-server:web-server"
-runner = "wasi"
-# Chỉ định thư mục gốc là /public và cổng 80
+# 👇 SỬA DÒNG NÀY: Dùng đường dẫn runner đầy đủ thay vì chỉ "wasi"
+runner = "https://webc.org/runner/wasi"
 annotations = { "wasi.env" = ["SERVER_ROOT=/public", "PORT=80"] }
