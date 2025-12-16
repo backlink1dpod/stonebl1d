@@ -29,7 +29,7 @@ jobs:
         # Bạn cần thay thế link dưới bằng link thực tế Wasmer cấp sau lần deploy đầu
         run: |
           npm install
-          hugo --minify --baseURL "https://stonebl1d-backlink1dpod.wasmer.app/"
+          hugo --minify --baseURL "https://stonebl1d.wasmer.app/"
 
       - name: Install Wasmer CLI
         uses: wasmerio/setup-wasmer@v3.1
