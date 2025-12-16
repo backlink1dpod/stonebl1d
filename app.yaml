@@ -1,0 +1,4 @@
+kind: wasmer.io/App.v0
+name: stonebl1d             # Tên ứng dụng của bạn
+owner: backlink1dpod        # Username Wasmer của bạn
+package: .                  # Dấu chấm nghĩa là "dùng cấu hình trong wasmer.toml tại đây"
