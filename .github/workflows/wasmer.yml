@@ -34,6 +34,15 @@ jobs:
       - name: Install Wasmer CLI
         uses: wasmerio/setup-wasmer@v3.1
 
+# 👇 THÊM BƯỚC NÀY VÀO ĐÂY 👇
+      - name: Auto-bump Version
+        run: |
+          # Lệnh này sẽ thay thế dòng version="xxx" thành version="0.0.<số-lần-chạy>"
+          sed -i "s/^version = \".*\"/version = \"0.0.${{ github.run_number }}\"/" wasmer.toml
+          
+          # In ra để kiểm tra
+          grep "version =" wasmer.toml
+
       - name: Deploy to Wasmer
         env:
           WASMER_TOKEN: ${{ secrets.WASMER_TOKEN }}
