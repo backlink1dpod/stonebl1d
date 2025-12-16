@@ -38,10 +38,14 @@ jobs:
       - name: Upload to BunnyCDN
         uses: ayeressian/bunnycdn-storage-deploy@v2.2.5
         with:
-          source: "public"                 # Thư mục chứa web sau khi build
-          destination: "/"                 # Upload vào gốc của Storage Zone
+          source: "public"
+          destination: "/"
           storageZoneName: "${{ secrets.BUNNY_STORAGE_NAME }}"
           storagePassword: "${{ secrets.BUNNY_API_KEY }}"
           accessKey: "${{ secrets.BUNNY_API_KEY }}"
+          
+          # 👇 THÊM DÒNG NÀY ĐỂ CHỌN SERVER SINGAPORE
+          storageEndpoint: "sg.storage.bunnycdn.com"
+          
           upload: true
-          remove: true                     # Xóa file cũ trên Bunny nếu trong code không còn (cleanup)
+          remove: true
