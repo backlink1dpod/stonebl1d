@@ -37,4 +37,4 @@ jobs:
       - name: Deploy to Wasmer
         env:
           WASMER_TOKEN: ${{ secrets.WASMER_TOKEN }}
-        run: wasmer deploy --non-interactive --publish
+        run: wasmer deploy --non-interactive
