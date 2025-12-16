@@ -1,0 +1,53 @@
+name: Deploy to Codeberg Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Hugo
+        run: |
+          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v0.151.0/hugo_extended_0.151.0_linux-amd64.deb \
+          && sudo dpkg -i ${{ runner.temp }}/hugo.deb
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      # Build web với BaseURL của Codeberg
+      - name: Build Hugo
+        run: hugo --minify --baseURL "https://bl1d.codeberg.page/"
+
+      # Đẩy thư mục public sang Codeberg
+      - name: Push to Codeberg
+        env:
+          CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
+          CODEBERG_USER: bl1d      # Username Codeberg của bạn
+          CODEBERG_REPO: pages     # Tên repo trên Codeberg
+        run: |
+          cd public
+          git init
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          
+          # Thêm remote có chứa Token xác thực
+          git remote add origin "https://$CODEBERG_USER:$CODEBERG_TOKEN@codeberg.org/$CODEBERG_USER/$CODEBERG_REPO.git"
+          
+          git add .
+          git commit -m "Deploy from GitHub Actions (Run ${{ github.run_number }})"
+          
+          # Đẩy code lên nhánh main của Codeberg (Force push để ghi đè lịch sử cũ cho gọn)
+          git push --force origin main
