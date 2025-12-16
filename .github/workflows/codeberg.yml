@@ -35,19 +35,22 @@ jobs:
       - name: Push to Codeberg
         env:
           CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
-          CODEBERG_USER: bl1d      # Username Codeberg của bạn
-          CODEBERG_REPO: pages     # Tên repo trên Codeberg
+          CODEBERG_USER: bl1d
+          CODEBERG_REPO: pages
         run: |
           cd public
           git init
+          
+          # 👇 THÊM DÒNG NÀY ĐỂ ĐỔI TÊN NHÁNH THÀNH MAIN
+          git checkout -b main
+          
           git config user.name "GitHub Action"
           git config user.email "action@github.com"
           
-          # Thêm remote có chứa Token xác thực
           git remote add origin "https://$CODEBERG_USER:$CODEBERG_TOKEN@codeberg.org/$CODEBERG_USER/$CODEBERG_REPO.git"
           
           git add .
           git commit -m "Deploy from GitHub Actions (Run ${{ github.run_number }})"
           
-          # Đẩy code lên nhánh main của Codeberg (Force push để ghi đè lịch sử cũ cho gọn)
+          # Bây giờ lệnh này sẽ chạy đúng vì nhánh local đã là main
           git push --force origin main
