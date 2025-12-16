@@ -9,7 +9,7 @@
 
 # --- AZURE ---
 $Azure_BaseURL = "https://mz12.z11.web.core.windows.net/"
-$Azure_Remote  = "azure-blog:$web"
+$Azure_Remote  = 'azure-blog:$web'
 
 # --- BACKBLAZE B2 ---
 $B2_BucketName = "stonebl1d"
