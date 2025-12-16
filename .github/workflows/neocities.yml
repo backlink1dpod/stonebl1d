@@ -43,5 +43,5 @@ jobs:
       uses: bcomnes/deploy-to-neocities@v1
       with:
         api_token: ${{ secrets.NEOCITIES_API_TOKEN }}
-        cleanup: false # Set true nếu bạn muốn xóa các file trên Neocities không có trong bản build mới
+        cleanup: true # Set true nếu bạn muốn xóa các file trên Neocities không có trong bản build mới
         dist_dir: public
