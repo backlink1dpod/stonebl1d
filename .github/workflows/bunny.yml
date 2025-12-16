@@ -1,0 +1,47 @@
+name: Deploy to BunnyCDN
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # Cài đặt Hugo
+      - name: Install Hugo
+        run: |
+          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v0.151.0/hugo_extended_0.151.0_linux-amd64.deb \
+          && sudo dpkg -i ${{ runner.temp }}/hugo.deb
+
+      # Cài đặt Node/NPM (để cài theme)
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      # Build web
+      # QUAN TRỌNG: Phải set baseURL đúng link Pull Zone của Bunny
+      - name: Build Hugo
+        run: hugo --minify --baseURL "https://bl1d.b-cdn.net/"
+
+      # Upload lên BunnyCDN Storage
+      - name: Upload to BunnyCDN
+        uses: ayeressian/bunnycdn-storage-deploy@v2.2.5
+        with:
+          source: "public"                 # Thư mục chứa web sau khi build
+          destination: "/"                 # Upload vào gốc của Storage Zone
+          storageZoneName: "${{ secrets.BUNNY_STORAGE_NAME }}"
+          storagePassword: "${{ secrets.BUNNY_API_KEY }}"
+          accessKey: "${{ secrets.BUNNY_API_KEY }}"
+          upload: true
+          remove: true                     # Xóa file cũ trên Bunny nếu trong code không còn (cleanup)
