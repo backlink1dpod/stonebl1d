@@ -1,0 +1,7 @@
+# Chỉ định các gói phần mềm cần cài đặt
+[phases.setup]
+nixPkgs = ["hugo", "nodejs", "go", "git"]
+
+# Thiết lập biến môi trường (để Hugo biết đường dẫn build)
+[variables]
+HUGO_ENVIRONMENT = "production"
