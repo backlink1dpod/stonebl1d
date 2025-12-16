@@ -1,7 +1,14 @@
-# Chỉ định các gói phần mềm cần cài đặt
-[phases.setup]
-nixPkgs = ["hugo", "nodejs", "go", "git"]
+# QUAN TRỌNG: Dòng này ép Railway kích hoạt cả Node và Go
+providers = ["node", "go"]
 
-# Thiết lập biến môi trường (để Hugo biết đường dẫn build)
+# Cài đặt thêm Hugo và Git (vì provider Node/Go không có sẵn Hugo)
+[phases.setup]
+nixPkgs = ["hugo", "git"]
+
+# Đảm bảo Hugo biết đây là môi trường Production
 [variables]
 HUGO_ENVIRONMENT = "production"
+
+# Ghi đè lệnh build (để chắc chắn nó chạy đúng lệnh này)
+[phases.build]
+cmds = ["npm install && npm run build"]
