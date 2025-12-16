@@ -31,4 +31,4 @@ RUN npm install -g serve
 # 8. Mở cổng 80 và chạy web từ thư mục public
 ENV PORT=80
 EXPOSE 80
-CMD ["serve", "-s", "public", "-l", "80"]
+CMD ["serve", "public", "-l", "80"]
