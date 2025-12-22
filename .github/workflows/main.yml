@@ -1,4 +1,4 @@
-name: Deploy Hugo site to Pages
+name: Deploy Hugoplate to Pages
 
 on:
   push:
@@ -15,9 +15,12 @@ defaults:
     shell: bash
 
 env:
-  HUGO_VERSION: "0.151.0"
-  GO_VERSION: "1.23.3"
-  # Biến môi trường cho TinaCMS (giữ nguyên của bạn)
+  # Hugoplate yêu cầu bản Hugo Extended
+  HUGO_VERSION: "0.128.0" 
+  # Hugoplate chạy tốt nhất trên Node 18 hoặc 20
+  NODE_VERSION: "20"
+  
+  # Biến môi trường TinaCMS (giữ nguyên của bạn)
   TINA_CLIENT_ID: ${{ secrets.TINA_CLIENT_ID }}
   TINA_TOKEN: ${{ secrets.TINA_TOKEN }}
   TINA_SEARCH_TOKEN: ${{ secrets.TINA_SEARCH_TOKEN }}
@@ -32,44 +35,42 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      # 1. Cài Go chuẩn (thay vì wget thủ công)
-      - name: Setup Go
-        uses: actions/setup-go@v5
+      # 1. Cài đặt Node.js (BẮT BUỘC cho Hugoplate để chạy Tailwind)
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          go-version: ${{ env.GO_VERSION }}
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
-      # 2. Cài Hugo chuẩn (tự động chọn bản Extended và đúng CPU)
+      # 2. Cài đặt Hugo Extended (BẮT BUỘC cho Hugoplate)
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: ${{ env.HUGO_VERSION }}
           extended: true
 
-      # 3. Cài Node.js (cho Theme/Tina)
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install NPM dependencies
+      # 3. Cài các thư viện NPM (Tailwind, PostCSS...)
+      - name: Install Dependencies
         run: npm ci
 
-      # 4. QUAN TRỌNG: Sửa lỗi Module/Theme không tương thích
-      # Lệnh này sẽ tải các module còn thiếu mà Hugo đang báo lỗi
-      - name: Initialize Hugo Modules
-        run: |
-          hugo mod get -u
-          hugo mod tidy
-
-      # 5. Build Web
+      # 4. Build Hugoplate
+      # QUAN TRỌNG: Ghi đè baseURL để đường dẫn CSS/JS không bị sai
       - name: Build with Hugo
-        run: hugo --minify --baseURL "https://backlink1dpod.github.io/stonebl1d/"
+        run: hugo --minify --gc --baseURL "https://backlink1dpod.github.io/stonebl1d/"
 
-      # 6. Debug: Kiểm tra xem file index.html có được tạo ra không?
-      # Nếu bước này in ra danh sách file, nghĩa là build thành công.
-      - name: List output files (Debug)
-        run: ls -R public
+      # 5. Tạo file .nojekyll để GitHub không chặn file CSS/JS của Hugoplate
+      - name: Create .nojekyll
+        run: touch public/.nojekyll
+
+      # 6. Kiểm tra file output (Debug)
+      - name: Check Output
+        run: |
+          echo "Kiểm tra thư mục public:"
+          ls -la public/
+          if [ ! -f "public/index.html" ]; then
+            echo "LỖI: Không tìm thấy index.html. Quá trình build Hugoplate bị lỗi ngầm!"
+            exit 1
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
