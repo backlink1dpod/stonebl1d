@@ -15,12 +15,12 @@ defaults:
     shell: bash
 
 env:
-  # Hugoplate yêu cầu bản Hugo Extended
-  HUGO_VERSION: "0.128.0" 
-  # Hugoplate chạy tốt nhất trên Node 18 hoặc 20
+  # Hugoplate yêu cầu Hugo Extended
+  HUGO_VERSION: "0.128.0"
+  # Hugoplate chạy tốt trên Node 20
   NODE_VERSION: "20"
   
-  # Biến môi trường TinaCMS (giữ nguyên của bạn)
+  # Biến môi trường TinaCMS
   TINA_CLIENT_ID: ${{ secrets.TINA_CLIENT_ID }}
   TINA_TOKEN: ${{ secrets.TINA_TOKEN }}
   TINA_SEARCH_TOKEN: ${{ secrets.TINA_SEARCH_TOKEN }}
@@ -35,40 +35,47 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      # 1. Cài đặt Node.js (BẮT BUỘC cho Hugoplate để chạy Tailwind)
+      # 1. Cài đặt Node.js
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          # QUAN TRỌNG: Đã xóa dòng "cache: npm" để tránh lỗi thiếu lock file
 
-      # 2. Cài đặt Hugo Extended (BẮT BUỘC cho Hugoplate)
+      # 2. Cài đặt Hugo
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: ${{ env.HUGO_VERSION }}
           extended: true
 
-      # 3. Cài các thư viện NPM (Tailwind, PostCSS...)
+      # 3. Cài đặt dependencies (Sửa lỗi lock file)
+      # Dùng 'npm install' thay vì 'npm ci' vì bạn chưa có package-lock.json
       - name: Install Dependencies
-        run: npm ci
+        run: npm install
 
-      # 4. Build Hugoplate
-      # QUAN TRỌNG: Ghi đè baseURL để đường dẫn CSS/JS không bị sai
-      - name: Build with Hugo
-        run: hugo --minify --gc --baseURL "https://backlink1dpod.github.io/stonebl1d/"
+      # 4. Build Web (Theo đúng chuẩn Hugoplate)
+      - name: Build Site
+        run: |
+          # Bước 1: Chạy script tạo theme của Hugoplate (Lấy từ package.json của bạn)
+          node scripts/themeGenerator.js
+          
+          # Bước 2: Chạy Hugo với baseURL chuẩn của GitHub Pages
+          hugo --gc --minify --baseURL "https://backlink1dpod.github.io/stonebl1d/"
 
-      # 5. Tạo file .nojekyll để GitHub không chặn file CSS/JS của Hugoplate
+      # 5. Tạo file .nojekyll (Để GitHub load được CSS/JS bắt đầu bằng dấu _)
       - name: Create .nojekyll
         run: touch public/.nojekyll
 
-      # 6. Kiểm tra file output (Debug)
+      # 6. Kiểm tra kết quả (Debug)
       - name: Check Output
         run: |
-          echo "Kiểm tra thư mục public:"
+          echo "--- LISTING PUBLIC FOLDER ---"
           ls -la public/
-          if [ ! -f "public/index.html" ]; then
-            echo "LỖI: Không tìm thấy index.html. Quá trình build Hugoplate bị lỗi ngầm!"
+          if [ -f "public/index.html" ]; then
+            echo "SUCCESS: index.html found!"
+          else
+            echo "ERROR: index.html NOT found!"
             exit 1
           fi
 
