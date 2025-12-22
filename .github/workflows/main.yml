@@ -15,9 +15,8 @@ defaults:
     shell: bash
 
 env:
-  # Hugoplate yêu cầu Hugo Extended
-  HUGO_VERSION: "0.128.0"
-  # Hugoplate chạy tốt trên Node 20
+  # 👇 SỬA QUAN TRỌNG: Nâng lên bản 0.151.0 theo yêu cầu của log
+  HUGO_VERSION: "0.151.0"
   NODE_VERSION: "20"
   
   # Biến môi trường TinaCMS
@@ -40,34 +39,39 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # QUAN TRỌNG: Đã xóa dòng "cache: npm" để tránh lỗi thiếu lock file
 
-      # 2. Cài đặt Hugo
+      # 2. Cài đặt Hugo Extended
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: ${{ env.HUGO_VERSION }}
           extended: true
 
-      # 3. Cài đặt dependencies (Sửa lỗi lock file)
-      # Dùng 'npm install' thay vì 'npm ci' vì bạn chưa có package-lock.json
-      - name: Install Dependencies
+      # 3. Cài đặt dependencies (NPM)
+      - name: Install NPM Dependencies
         run: npm install
 
-      # 4. Build Web (Theo đúng chuẩn Hugoplate)
+      # 4. Tải Hugo Modules (Sửa lỗi "partial not found")
+      # Bước này bắt buộc để Hugo tải các file giao diện về trước khi build
+      - name: Initialize Hugo Modules
+        run: |
+          hugo mod get -u
+          hugo mod tidy
+
+      # 5. Build Web
       - name: Build Site
         run: |
-          # Bước 1: Chạy script tạo theme của Hugoplate (Lấy từ package.json của bạn)
+          # Bước 1: Chạy script tạo theme CSS
           node scripts/themeGenerator.js
           
-          # Bước 2: Chạy Hugo với baseURL chuẩn của GitHub Pages
+          # Bước 2: Chạy Hugo
           hugo --gc --minify --baseURL "https://backlink1dpod.github.io/stonebl1d/"
 
-      # 5. Tạo file .nojekyll (Để GitHub load được CSS/JS bắt đầu bằng dấu _)
+      # 6. Tạo file .nojekyll
       - name: Create .nojekyll
         run: touch public/.nojekyll
 
-      # 6. Kiểm tra kết quả (Debug)
+      # 7. Kiểm tra kết quả
       - name: Check Output
         run: |
           echo "--- LISTING PUBLIC FOLDER ---"
